@@ -1,4 +1,4 @@
-from .models import ErrorResponse
+from .types import ErrorResponse
 
 
 class AttenpyException(Exception):

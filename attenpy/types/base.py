@@ -1,11 +1,9 @@
+from typing import Literal, TypedDict
 
 
-from typing import Any, Literal, TypedDict
-
-
-class SuccessResponse(TypedDict):
+class SuccessResponse[T](TypedDict):
     ok: Literal[True]
-    data: Any
+    data: T
 
 
 class CursorPage(TypedDict):
@@ -17,7 +15,7 @@ class CursorPage(TypedDict):
     has_more: bool
 
 
-class ListResponse(SuccessResponse):
+class ListResponse[T](SuccessResponse[list[T]]):
     page: CursorPage
 
 

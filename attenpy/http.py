@@ -1,9 +1,9 @@
-from typing import Any, Optional, TypedDict, Unpack
+from typing import Any, Optional, TypedDict, Unpack, cast
 
 import aiohttp
 
 from .exceptions import HTTPException
-from .types import AnyResponse, ListResponse, SuccessResponse
+from .types import AnyResponsePayload, ListResponsePayload, SuccessResponsePayload
 
 
 class RequestOptions(TypedDict, total=False):
@@ -34,34 +34,34 @@ class HTTPClient:
         async with session.request(
             method, url, json=kwargs.get("json"), params=kwargs.get("params")
         ) as resp:
-            data: AnyResponse = await resp.json()
+            data = cast(AnyResponsePayload, await resp.json())  # TODO レスポンスの検証
             if data["ok"] is False:
                 raise HTTPException(resp.status, data)  # TODO statusごとにクラス分ける
         return data
 
     async def get[T](
         self, typ: type[T], path: str, **kwargs: Unpack[RequestOptions]
-    ) -> SuccessResponse[T]:
+    ) -> SuccessResponsePayload[T]:
         return await self.request("GET", path, **kwargs)
 
     async def get_list[T](
         self, typ: type[T], path: str, **kwargs: Unpack[RequestOptions]
-    ) -> ListResponse[T]:
-        return await self.request("GET", path, **kwargs)
+    ) -> ListResponsePayload[T]:
+        return await self.request("GET", path, **kwargs)  # TODO レスポンスの検証
 
     async def post[T](
         self, typ: type[T], path: str, **kwargs: Unpack[RequestOptions]
-    ) -> SuccessResponse[T]:
+    ) -> SuccessResponsePayload[T]:
         return await self.request("POST", path, **kwargs)
 
     async def put[T](
         self, typ: type[T], path: str, **kwargs: Unpack[RequestOptions]
-    ) -> SuccessResponse[T]:
+    ) -> SuccessResponsePayload[T]:
         return await self.request("PUT", path, **kwargs)
 
     async def delete[T](
         self, typ: type[T], path: str, **kwargs: Unpack[RequestOptions]
-    ) -> SuccessResponse[T]:
+    ) -> SuccessResponsePayload[T]:
         return await self.request("DELETE", path, **kwargs)
 
     async def close(self) -> None:

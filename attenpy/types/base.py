@@ -1,12 +1,12 @@
 from typing import Literal, TypedDict
 
 
-class SuccessResponse[T](TypedDict):
+class SuccessResponsePayload[T](TypedDict):
     ok: Literal[True]
     data: T
 
 
-class CursorPage(TypedDict):
+class CursorPagePayload(TypedDict):
     limit: int
     order: Literal["asc", "desc"]
     cursor: int | None
@@ -15,14 +15,14 @@ class CursorPage(TypedDict):
     has_more: bool
 
 
-class ListResponse[T](SuccessResponse[list[T]]):
-    page: CursorPage
+class ListResponsePayload[T](SuccessResponsePayload[list[T]]):
+    page: CursorPagePayload
 
 
-class ErrorResponse(TypedDict):
+class ErrorResponsePayload(TypedDict):
     ok: Literal[False]
     code: str
     details: dict
 
 
-AnyResponse = SuccessResponse | ErrorResponse
+AnyResponsePayload = SuccessResponsePayload | ErrorResponsePayload

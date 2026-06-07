@@ -1,15 +1,15 @@
 from .base import (
-    AnyResponse,
-    CursorPage,
-    ErrorResponse,
-    ListResponse,
-    SuccessResponse,
+    AnyResponsePayload,
+    CursorPagePayload,
+    ErrorResponsePayload,
+    ListResponsePayload,
+    SuccessResponsePayload,
 )
 
 __all__ = [
-    "AnyResponse",
-    "CursorPage",
-    "ErrorResponse",
-    "ListResponse",
-    "SuccessResponse",
+    "AnyResponsePayload",
+    "CursorPagePayload",
+    "ErrorResponsePayload",
+    "ListResponsePayload",
+    "SuccessResponsePayload",
 ]

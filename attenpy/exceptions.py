@@ -1,4 +1,4 @@
-from .types import ErrorResponse
+from .types import ErrorResponsePayload
 
 
 class AttenpyException(Exception):
@@ -12,7 +12,7 @@ class APIConnectionError(AttenpyException):
 
 
 class HTTPException(AttenpyException):
-    def __init__(self, status: int, data: ErrorResponse):
+    def __init__(self, status: int, data: ErrorResponsePayload):
         self.status = status
         self.code = data["code"]
         self.details = data["details"]

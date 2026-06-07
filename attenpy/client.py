@@ -1,6 +1,7 @@
 import asyncio
 from typing import Optional
 
+from .endpoints import UserEndpoint
 from .http import HTTPClient
 
 
@@ -13,6 +14,8 @@ class Client:
         self._http: Optional[HTTPClient] = None
         self._token: Optional[str] = None
         self._ready: asyncio.Event = asyncio.Event()
+
+        self.users = UserEndpoint(self)
 
     async def login(self, token: str) -> None:
         self._token = token

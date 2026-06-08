@@ -5,12 +5,6 @@ class AttenpyException(Exception):
     pass
 
 
-class APIConnectionError(AttenpyException):
-    def __init__(self, message: str):
-        super().__init__(message)
-        self.message = message
-
-
 class HTTPException(AttenpyException):
     def __init__(self, status: int, data: ErrorResponsePayload):
         self.status = status

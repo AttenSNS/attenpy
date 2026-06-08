@@ -29,12 +29,11 @@ async def paginate[ItemT](
     while remaining > 0:
         params["limit"] = min(remaining, MAX_PAGINATION_LIMIT)
         resp = await http.get_list(typ, path, params=params)
-        for item in resp["data"]:
+        for item in resp.data:
             yield item
             remaining -= 1
             if remaining == 0:
                 return
-        page = resp["page"]
-        if not page["has_more"]:
+        if not resp.page.has_more:
             break
-        params["cursor"] = page["next"]
+        params["cursor"] = resp.page.next

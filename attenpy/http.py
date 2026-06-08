@@ -3,7 +3,8 @@ from typing import Any, Optional, TypedDict, Unpack, cast
 import aiohttp
 
 from .exceptions import HTTPException
-from .types import AnyResponsePayload, ListResponsePayload, SuccessResponsePayload
+from .models import ListResponse, SuccessResponse
+from .types import AnyResponsePayload
 
 
 class RequestOptions(TypedDict, total=False):
@@ -23,7 +24,7 @@ class HTTPClient:
             self._session = aiohttp.ClientSession(headers=headers)
         return self._session
 
-    async def request[T](
+    async def _request[T](
         self, method: str, path: str, **kwargs: Unpack[RequestOptions]
     ) -> Any:
         if not path.startswith("/"):
@@ -41,28 +42,33 @@ class HTTPClient:
 
     async def get[T](
         self, typ: type[T], path: str, **kwargs: Unpack[RequestOptions]
-    ) -> SuccessResponsePayload[T]:
-        return await self.request("GET", path, **kwargs)
+    ) -> SuccessResponse[T]:
+        data = await self._request("GET", path, **kwargs)
+        return SuccessResponse.from_json(data)
 
     async def get_list[T](
         self, typ: type[T], path: str, **kwargs: Unpack[RequestOptions]
-    ) -> ListResponsePayload[T]:
-        return await self.request("GET", path, **kwargs)  # TODO レスポンスの検証
+    ) -> ListResponse[T]:
+        data = await self._request("GET", path, **kwargs)
+        return ListResponse.from_json(data)
 
     async def post[T](
         self, typ: type[T], path: str, **kwargs: Unpack[RequestOptions]
-    ) -> SuccessResponsePayload[T]:
-        return await self.request("POST", path, **kwargs)
+    ) -> SuccessResponse[T]:
+        data = await self._request("POST", path, **kwargs)
+        return SuccessResponse.from_json(data)
 
     async def put[T](
         self, typ: type[T], path: str, **kwargs: Unpack[RequestOptions]
-    ) -> SuccessResponsePayload[T]:
-        return await self.request("PUT", path, **kwargs)
+    ) -> SuccessResponse[T]:
+        data = await self._request("PUT", path, **kwargs)
+        return SuccessResponse.from_json(data)
 
     async def delete[T](
         self, typ: type[T], path: str, **kwargs: Unpack[RequestOptions]
-    ) -> SuccessResponsePayload[T]:
-        return await self.request("DELETE", path, **kwargs)
+    ) -> SuccessResponse[T]:
+        data = await self._request("DELETE", path, **kwargs)
+        return SuccessResponse.from_json(data)
 
     async def close(self) -> None:
         if self._session and not self._session.closed:

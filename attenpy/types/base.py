@@ -1,17 +1,24 @@
 from typing import Literal, TypedDict
 
 
+class RequestMetaPayload(TypedDict):
+    request_id: str
+    session_id: str | None
+    actor_id: str | None
+
+
 class SuccessResponsePayload[T](TypedDict):
     ok: Literal[True]
     data: T
+    meta: RequestMetaPayload
 
 
 class CursorPagePayload(TypedDict):
     limit: int
     order: Literal["asc", "desc"]
-    cursor: int | None
-    next: int | None
-    back: int | None
+    cursor: str | None
+    next: str | None
+    back: str | None
     has_more: bool
 
 

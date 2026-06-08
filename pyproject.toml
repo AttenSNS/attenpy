@@ -12,6 +12,14 @@ dependencies = [
     "aiohttp>=3.9.0",
     "pydantic>=2.0.0",
 ]
+license = { text = "MIT" }
+authors = [
+  { name = "AttenTeam" }
+]
+
+[project.urls]
+Homepage = "https://atten.win/"
+Repository = "https://github.com/attensns/attenpy"
 
 [project.optional-dependencies]
 dev = [

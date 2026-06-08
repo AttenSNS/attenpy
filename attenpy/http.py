@@ -13,14 +13,16 @@ class RequestOptions(TypedDict, total=False):
 
 
 class HTTPClient:
-    def __init__(self, base_url: str, token: str):
+    def __init__(self, base_url: str, token: str | None):
         self.base_url = base_url.rstrip("/")
         self.token = token
         self._session: Optional[aiohttp.ClientSession] = None
 
     async def _get_session(self) -> aiohttp.ClientSession:
         if self._session is None or self._session.closed:
-            headers = {"Authorization": f"Bearer {self.token}"}
+            headers = {}
+            if self.token:
+                headers["Authorization"] = "Bearer " + self.token
             self._session = aiohttp.ClientSession(headers=headers)
         return self._session
 

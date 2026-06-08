@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 
 
 class PartialPost(BaseModel):
-    id: str
+    id: int
     author_id: str
     author: "PartialUser"
     content_md: str
@@ -21,6 +21,9 @@ class PartialPost(BaseModel):
     is_edited: bool
     deleted: bool
     attachments: list["Attachment"]
+
+    def __int__(self) -> int:
+        return self.id
 
 
 class Post(PartialPost):

@@ -2,6 +2,8 @@ from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
+from ..ref import UserRef
+
 if TYPE_CHECKING:
     from .attachment import Attachment, ExternalAttachment
     from .post import Post
@@ -17,6 +19,13 @@ class PartialUser(BaseModel):
     is_muted: bool | None
     is_following: bool | None = None
     is_followed: bool | None = None
+
+    def __int__(self) -> int:
+        return self.id
+
+    @property
+    def ref(self):
+        return UserRef(user_id=self.id)
 
 
 class User(PartialUser):

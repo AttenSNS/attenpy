@@ -59,6 +59,10 @@ class HTTPClient:
         data = await self._request("PUT", path, **kw)
         return SuccessResponse.from_json(data)
 
+    async def patch(self, path: str, **kw: Unpack[RequestOptions]) -> SuccessResponse:
+        data = await self._request("PATCH", path, **kw)
+        return SuccessResponse.from_json(data)
+
     async def delete(self, path: str, **kw: Unpack[RequestOptions]) -> SuccessResponse:
         data = await self._request("DELETE", path, **kw)
         return SuccessResponse.from_json(data)

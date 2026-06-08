@@ -1,6 +1,7 @@
+from types import EllipsisType
 from typing import TYPE_CHECKING, AsyncIterator
 
-from ..models import PartialUser, Post, User
+from ..models import Attachment, PartialPost, PartialUser, Post, User
 from ..pagination import (
     MAX_PAGINATION_LIMIT,
     PAGINATE_ORDER,
@@ -8,6 +9,7 @@ from ..pagination import (
     paginate,
 )
 from ..ref import UserRef
+from ..utils import int_or_none
 
 if TYPE_CHECKING:
     from ..client import Client
@@ -19,6 +21,31 @@ class UserEndpoint:
 
     async def get(self, user: UserRef | str) -> User:
         return User.model_validate((await self.client.http.get(f"/users/{user}")).data)
+
+    async def edit(
+        self,
+        user: UserRef | str,
+        *,
+        display_name: str | None | EllipsisType = ...,
+        bio: str | EllipsisType = ...,
+        icon: int | Attachment | None | EllipsisType = ...,
+        banner: int | Attachment | None | EllipsisType = ...,
+        pinned: int | PartialPost | None | EllipsisType = ...,
+    ) -> User:
+        payload = {}
+        if display_name is not ...:
+            payload["display_name"] = display_name
+        if bio is not ...:
+            payload["bio"] = bio
+        if icon is not ...:
+            payload["icon_id"] = int_or_none(icon)
+        if banner is not ...:
+            payload["banner_id"] = int_or_none(banner)
+        if pinned is not ...:
+            payload["pinned_id"] = int_or_none(pinned)
+        return User.model_validate(
+            (await self.client.http.patch(f"/users/{user}", json=payload)).data
+        )
 
     async def follow(self, user: UserRef | str):
         await self.client.http.post(f"/users/{user}/follow")

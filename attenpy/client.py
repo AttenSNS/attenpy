@@ -1,6 +1,4 @@
-from typing import Optional
-
-from .endpoints import UserEndpoint
+from .endpoints import PostEndpoint, UserEndpoint
 from .http import HTTPClient
 
 
@@ -12,9 +10,9 @@ class Client:
     ):
         self.base_url = base_url
         self.http: HTTPClient = HTTPClient(self.base_url, token)
-        self._token: Optional[str] = None
 
         self.users = UserEndpoint(self)
+        self.posts = PostEndpoint(self)
 
     async def close(self) -> None:
         if self.http:

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Literal, Union
+from typing import ClassVar, Literal, Union
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -7,6 +7,8 @@ class UserRef:
     user_id: int | None = None
     username: str | None = None
     me: Literal[True] | None = None
+
+    ME: ClassVar["UserRef"]
 
     def __str__(self) -> str:
         match self.value:
@@ -47,3 +49,6 @@ class UserRef:
             if user_id.isdecimal():
                 return cls(user_id=int(user_id))
         return cls(username=path)
+
+
+UserRef.ME = UserRef(me=True)

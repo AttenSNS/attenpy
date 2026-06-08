@@ -9,18 +9,18 @@ CursorT = TypeVar("CursorT")
 MAX_PAGINATION_LIMIT = 30
 
 PAGINATE_ORDER = Literal["desc", "asc"]
+PAGINATE_ORDER_DEFAULT: PAGINATE_ORDER = "desc"
 
 
-async def paginate[ItemT](
-    typ: type[ItemT],
+async def paginate(
     http: HTTPClient,
     path: str,
-    cursor: int | None = None,
     *,
-    limit: int = MAX_PAGINATION_LIMIT,
-    params: dict[str, Any] | None = None,
+    cursor: int | None,
+    limit: int,
     order: PAGINATE_ORDER,
-) -> AsyncIterator[ItemT]:
+    params: dict[str, Any] | None = None,
+) -> AsyncIterator:
     params = (params and params.copy()) or {}
     params["order"] = order
     if cursor is not None:
@@ -28,7 +28,7 @@ async def paginate[ItemT](
     remaining = limit
     while remaining > 0:
         params["limit"] = min(remaining, MAX_PAGINATION_LIMIT)
-        resp = await http.get_list(typ, path, params=params)
+        resp = await http.get_list(path, params=params)
         for item in resp.data:
             yield item
             remaining -= 1

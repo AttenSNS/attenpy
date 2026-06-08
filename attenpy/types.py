@@ -1,4 +1,4 @@
-from typing import Literal, TypedDict
+from typing import Any, Literal, TypedDict
 
 
 class RequestMetaPayload(TypedDict):
@@ -29,7 +29,7 @@ class ListResponsePayload[T](SuccessResponsePayload[list[T]]):
 class ErrorResponsePayload(TypedDict):
     ok: Literal[False]
     code: str
-    details: dict
+    details: dict[str, Any]
 
 
 AnyResponsePayload = SuccessResponsePayload | ErrorResponsePayload

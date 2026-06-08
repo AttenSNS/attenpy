@@ -27,7 +27,7 @@ class HTTPClient:
         return self._session
 
     async def _request[T](
-        self, method: str, path: str, **kwargs: Unpack[RequestOptions]
+        self, method: str, path: str, **kw: Unpack[RequestOptions]
     ) -> Any:
         if not path.startswith("/"):
             raise ValueError()
@@ -35,41 +35,32 @@ class HTTPClient:
         url = self.base_url + path
 
         async with session.request(
-            method, url, json=kwargs.get("json"), params=kwargs.get("params")
+            method, url, json=kw.get("json"), params=kw.get("params")
         ) as resp:
             data = cast(AnyResponsePayload, await resp.json())  # TODO レスポンスの検証
             if data["ok"] is False:
                 raise HTTPException(resp.status, data)  # TODO statusごとにクラス分ける
+                # TODO 429
         return data
 
-    async def get[T](
-        self, typ: type[T], path: str, **kwargs: Unpack[RequestOptions]
-    ) -> SuccessResponse[T]:
-        data = await self._request("GET", path, **kwargs)
+    async def get(self, path: str, **kw: Unpack[RequestOptions]) -> SuccessResponse:
+        data = await self._request("GET", path, **kw)
         return SuccessResponse.from_json(data)
 
-    async def get_list[T](
-        self, typ: type[T], path: str, **kwargs: Unpack[RequestOptions]
-    ) -> ListResponse[T]:
-        data = await self._request("GET", path, **kwargs)
+    async def get_list(self, path: str, **kw: Unpack[RequestOptions]) -> ListResponse:
+        data = await self._request("GET", path, **kw)
         return ListResponse.from_json(data)
 
-    async def post[T](
-        self, typ: type[T], path: str, **kwargs: Unpack[RequestOptions]
-    ) -> SuccessResponse[T]:
-        data = await self._request("POST", path, **kwargs)
+    async def post(self, path: str, **kw: Unpack[RequestOptions]) -> SuccessResponse:
+        data = await self._request("POST", path, **kw)
         return SuccessResponse.from_json(data)
 
-    async def put[T](
-        self, typ: type[T], path: str, **kwargs: Unpack[RequestOptions]
-    ) -> SuccessResponse[T]:
-        data = await self._request("PUT", path, **kwargs)
+    async def put(self, path: str, **kw: Unpack[RequestOptions]) -> SuccessResponse:
+        data = await self._request("PUT", path, **kw)
         return SuccessResponse.from_json(data)
 
-    async def delete[T](
-        self, typ: type[T], path: str, **kwargs: Unpack[RequestOptions]
-    ) -> SuccessResponse[T]:
-        data = await self._request("DELETE", path, **kwargs)
+    async def delete(self, path: str, **kw: Unpack[RequestOptions]) -> SuccessResponse:
+        data = await self._request("DELETE", path, **kw)
         return SuccessResponse.from_json(data)
 
     async def close(self) -> None:

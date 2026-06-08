@@ -1,10 +1,8 @@
-from typing import TYPE_CHECKING, AsyncIterator
+from typing import TYPE_CHECKING, AsyncIterator, Unpack
 
 from ..models import PartialPost, PartialUser, Post
 from ..pagination import (
-    MAX_PAGINATION_LIMIT,
-    PAGINATE_ORDER,
-    PAGINATE_ORDER_DEFAULT,
+    PaginateOptions,
     paginate,
 )
 from ..payloads import ParentsPostPayload
@@ -75,87 +73,40 @@ class PostEndpoint:
         await self.client.http.delete(f"/posts/{int(post)}/repost")
 
     async def get_loves(
-        self,
-        post: int | PartialPost,
-        *,
-        limit: int = MAX_PAGINATION_LIMIT,
-        cursor: int | None = None,
-        order: PAGINATE_ORDER = PAGINATE_ORDER_DEFAULT,
+        self, post: int | PartialPost, **kw: Unpack[PaginateOptions]
     ) -> AsyncIterator[PartialUser]:
-        async for data in paginate(
-            self.client.http,
-            f"/posts/{int(post)}/loves",
-            cursor=cursor,
-            limit=limit,
-            order=order,
-        ):
+        async for data in paginate(self.client.http, f"/posts/{int(post)}/loves", **kw):
             yield PartialUser.model_validate(data)
 
     async def get_history(
-        self,
-        post: int | PartialPost,
-        *,
-        limit: int = MAX_PAGINATION_LIMIT,
-        cursor: int | None = None,
-        order: PAGINATE_ORDER = PAGINATE_ORDER_DEFAULT,
+        self, post: int | PartialPost, **kw: Unpack[PaginateOptions]
     ) -> AsyncIterator[Post]:
         async for data in paginate(
-            self.client.http,
-            f"/posts/{int(post)}/history",
-            cursor=cursor,
-            limit=limit,
-            order=order,
+            self.client.http, f"/posts/{int(post)}/history", **kw
         ):
             yield Post.model_validate(data)
 
     async def get_quotes(
-        self,
-        post: int | PartialPost,
-        *,
-        limit: int = MAX_PAGINATION_LIMIT,
-        cursor: int | None = None,
-        order: PAGINATE_ORDER = PAGINATE_ORDER_DEFAULT,
+        self, post: int | PartialPost, **kw: Unpack[PaginateOptions]
     ) -> AsyncIterator[Post]:
         async for data in paginate(
-            self.client.http,
-            f"/posts/{int(post)}/quotes",
-            cursor=cursor,
-            limit=limit,
-            order=order,
+            self.client.http, f"/posts/{int(post)}/quotes", **kw
         ):
             yield Post.model_validate(data)
 
     async def get_replies(
-        self,
-        post: int | PartialPost,
-        *,
-        limit: int = MAX_PAGINATION_LIMIT,
-        cursor: int | None = None,
-        order: PAGINATE_ORDER = PAGINATE_ORDER_DEFAULT,
+        self, post: int | PartialPost, **kw: Unpack[PaginateOptions]
     ) -> AsyncIterator[Post]:
         async for data in paginate(
-            self.client.http,
-            f"/posts/{int(post)}/replies",
-            cursor=cursor,
-            limit=limit,
-            order=order,
+            self.client.http, f"/posts/{int(post)}/replies", **kw
         ):
             yield Post.model_validate(data)
 
     async def get_reposts(
-        self,
-        post: int | PartialPost,
-        *,
-        limit: int = MAX_PAGINATION_LIMIT,
-        cursor: int | None = None,
-        order: PAGINATE_ORDER = PAGINATE_ORDER_DEFAULT,
+        self, post: int | PartialPost, **kw: Unpack[PaginateOptions]
     ) -> AsyncIterator[Post]:
         async for data in paginate(
-            self.client.http,
-            f"/posts/{int(post)}/reposts",
-            cursor=cursor,
-            limit=limit,
-            order=order,
+            self.client.http, f"/posts/{int(post)}/reposts", **kw
         ):
             yield Post.model_validate(data)
 

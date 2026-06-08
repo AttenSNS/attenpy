@@ -1,11 +1,9 @@
 from types import EllipsisType
-from typing import TYPE_CHECKING, AsyncIterator
+from typing import TYPE_CHECKING, AsyncIterator, Unpack
 
 from ..models import Attachment, PartialPost, PartialUser, Post, User
 from ..pagination import (
-    MAX_PAGINATION_LIMIT,
-    PAGINATE_ORDER,
-    PAGINATE_ORDER_DEFAULT,
+    PaginateOptions,
     paginate,
 )
 from ..ref import UserRef
@@ -60,137 +58,49 @@ class UserEndpoint:
         await self.client.http.delete(f"/users/{user}/mute")
 
     async def get_followers(
-        self,
-        user: UserRef | str,
-        *,
-        limit: int = MAX_PAGINATION_LIMIT,
-        cursor: int | None = None,
-        order: PAGINATE_ORDER = PAGINATE_ORDER_DEFAULT,
+        self, user: UserRef | str, **kw: Unpack[PaginateOptions]
     ) -> AsyncIterator[PartialUser]:
-        async for data in paginate(
-            self.client.http,
-            f"/users/{user}/followers",
-            cursor=cursor,
-            limit=limit,
-            order=order,
-        ):
+        async for data in paginate(self.client.http, f"/users/{user}/followers", **kw):
             yield PartialUser.model_validate(data)
 
     async def get_following(
-        self,
-        user: UserRef | str,
-        *,
-        limit: int = MAX_PAGINATION_LIMIT,
-        cursor: int | None = None,
-        order: PAGINATE_ORDER = PAGINATE_ORDER_DEFAULT,
+        self, user: UserRef | str, **kw: Unpack[PaginateOptions]
     ) -> AsyncIterator[PartialUser]:
-        async for data in paginate(
-            self.client.http,
-            f"/users/{user}/following",
-            cursor=cursor,
-            limit=limit,
-            order=order,
-        ):
+        async for data in paginate(self.client.http, f"/users/{user}/following", **kw):
             yield PartialUser.model_validate(data)
 
     async def get_mutes(
-        self,
-        user: UserRef | str,
-        *,
-        limit: int = MAX_PAGINATION_LIMIT,
-        cursor: int | None = None,
-        order: PAGINATE_ORDER = PAGINATE_ORDER_DEFAULT,
+        self, user: UserRef | str, **kw: Unpack[PaginateOptions]
     ) -> AsyncIterator[PartialUser]:
-        async for data in paginate(
-            self.client.http,
-            f"/users/{user}/mutes",
-            cursor=cursor,
-            limit=limit,
-            order=order,
-        ):
+        async for data in paginate(self.client.http, f"/users/{user}/mutes", **kw):
             yield PartialUser.model_validate(data)
 
     async def get_posts(
-        self,
-        user: UserRef | str,
-        *,
-        limit: int = MAX_PAGINATION_LIMIT,
-        cursor: int | None = None,
-        order: PAGINATE_ORDER = PAGINATE_ORDER_DEFAULT,
+        self, user: UserRef | str, **kw: Unpack[PaginateOptions]
     ) -> AsyncIterator[Post]:
-        async for data in paginate(
-            self.client.http,
-            f"/users/{user}/posts",
-            cursor=cursor,
-            limit=limit,
-            order=order,
-        ):
+        async for data in paginate(self.client.http, f"/users/{user}/posts", **kw):
             yield Post.model_validate(data)
 
     async def get_medias(
-        self,
-        user: UserRef | str,
-        *,
-        limit: int = MAX_PAGINATION_LIMIT,
-        cursor: int | None = None,
-        order: PAGINATE_ORDER = PAGINATE_ORDER_DEFAULT,
+        self, user: UserRef | str, **kw: Unpack[PaginateOptions]
     ) -> AsyncIterator[Post]:
-        async for data in paginate(
-            self.client.http,
-            f"/users/{user}/medias",
-            cursor=cursor,
-            limit=limit,
-            order=order,
-        ):
+        async for data in paginate(self.client.http, f"/users/{user}/medias", **kw):
             yield Post.model_validate(data)
 
     async def get_loves(
-        self,
-        user: UserRef | str,
-        *,
-        limit: int = MAX_PAGINATION_LIMIT,
-        cursor: int | None = None,
-        order: PAGINATE_ORDER = PAGINATE_ORDER_DEFAULT,
+        self, user: UserRef | str, **kw: Unpack[PaginateOptions]
     ) -> AsyncIterator[Post]:
-        async for data in paginate(
-            self.client.http,
-            f"/users/{user}/loves",
-            cursor=cursor,
-            limit=limit,
-            order=order,
-        ):
+        async for data in paginate(self.client.http, f"/users/{user}/loves", **kw):
             yield Post.model_validate(data)
 
     async def get_bookmarks(
-        self,
-        user: UserRef | str,
-        *,
-        limit: int = MAX_PAGINATION_LIMIT,
-        cursor: int | None = None,
-        order: PAGINATE_ORDER = PAGINATE_ORDER_DEFAULT,
+        self, user: UserRef | str, **kw: Unpack[PaginateOptions]
     ) -> AsyncIterator[Post]:
-        async for data in paginate(
-            self.client.http,
-            f"/users/{user}/bookmarks",
-            cursor=cursor,
-            limit=limit,
-            order=order,
-        ):
+        async for data in paginate(self.client.http, f"/users/{user}/bookmarks", **kw):
             yield Post.model_validate(data)
 
     async def get_reposts(
-        self,
-        user: UserRef | str,
-        *,
-        limit: int = MAX_PAGINATION_LIMIT,
-        cursor: int | None = None,
-        order: PAGINATE_ORDER = PAGINATE_ORDER_DEFAULT,
+        self, user: UserRef | str, **kw: Unpack[PaginateOptions]
     ) -> AsyncIterator[Post]:
-        async for data in paginate(
-            self.client.http,
-            f"/users/{user}/reposts",
-            cursor=cursor,
-            limit=limit,
-            order=order,
-        ):
+        async for data in paginate(self.client.http, f"/users/{user}/reposts", **kw):
             yield Post.model_validate(data)

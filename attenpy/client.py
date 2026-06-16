@@ -1,4 +1,4 @@
-from .endpoints import PostEndpoint, UserEndpoint
+from .endpoints import NoticeEndpoint, PostEndpoint, UserEndpoint
 from .http import HTTPClient
 
 
@@ -13,6 +13,7 @@ class Client:
 
         self.users = UserEndpoint(self)
         self.posts = PostEndpoint(self)
+        self.notices = NoticeEndpoint(self)
 
     async def close(self) -> None:
         if self.http:

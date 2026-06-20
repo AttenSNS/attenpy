@@ -1,8 +1,10 @@
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
 from ..ref import UserRef
+from ..snowflake import Snowflake
 
 if TYPE_CHECKING:
     from .attachment import Attachment, ExternalAttachment
@@ -26,6 +28,10 @@ class PartialUser(BaseModel):
     @property
     def ref(self):
         return UserRef(user_id=self.id)
+
+    @property
+    def created_at(self) -> datetime:
+        return Snowflake(self.id).datetime
 
 
 class User(PartialUser):

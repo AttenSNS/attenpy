@@ -1,6 +1,9 @@
+from datetime import datetime
 from typing import TYPE_CHECKING, Literal, TypeAlias
 
 from pydantic import BaseModel
+
+from ..snowflake import Snowflake
 
 if TYPE_CHECKING:
     from .user import PartialUser
@@ -41,3 +44,7 @@ class Notice(BaseModel):
 
     def __int__(self) -> int:
         return self.id
+
+    @property
+    def created_at(self) -> datetime:
+        return Snowflake(self.id).datetime

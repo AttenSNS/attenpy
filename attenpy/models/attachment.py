@@ -1,6 +1,9 @@
+from datetime import datetime
 from typing import Literal
 
 from pydantic import BaseModel
+
+from ..snowflake import Snowflake
 
 
 class Attachment(BaseModel):
@@ -14,6 +17,10 @@ class Attachment(BaseModel):
 
     def __int__(self) -> int:
         return self.id
+
+    @property
+    def created_at(self) -> datetime:
+        return Snowflake(self.id).datetime
 
 
 class ExternalAttachment(BaseModel):

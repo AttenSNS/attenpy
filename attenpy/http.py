@@ -17,8 +17,11 @@ class HTTPClient:
         self.base_url = base_url.rstrip("/")
         self.token = token
         self._session: Optional[aiohttp.ClientSession] = None
+        self._closed: bool = False
 
     async def _get_session(self) -> aiohttp.ClientSession:
+        if self.closed:
+            raise RuntimeError("Session is closed")
         if self._session is None or self._session.closed:
             headers = {}
             if self.token:
@@ -67,7 +70,12 @@ class HTTPClient:
         data = await self._request("DELETE", path, **kw)
         return SuccessResponse.from_json(data)
 
+    @property
+    def closed(self):
+        return self._closed
+
     async def close(self) -> None:
+        self._closed = True
         if self._session and not self._session.closed:
             await self._session.close()
 

@@ -4,7 +4,7 @@ import asyncio
 from collections.abc import Callable
 from contextlib import suppress
 from json import JSONDecodeError
-from typing import TYPE_CHECKING, Any, Awaitable
+from typing import TYPE_CHECKING, Any, Coroutine
 from urllib.parse import urlencode, urlsplit, urlunsplit
 
 import aiohttp
@@ -20,7 +20,7 @@ from .ref import UserRef
 if TYPE_CHECKING:
     from .client import Client
 
-EventHandler = Callable[[Any], Awaitable[Any]]
+EventHandler = Callable[[Any], Coroutine[Any, Any, Any]]
 
 EVENT_PAYLOAD_MODELS: dict[str, type[BaseModel]] = {
     "bot.ready": BotReadyPayload,
@@ -35,7 +35,6 @@ class WSClient:
         self._task: asyncio.Task[None] | None = None
         self._ws: aiohttp.ClientWebSocketResponse | None = None
         self._closing = False
-        self._ws_user: UserRef | str | None = None
 
     @property
     def event_payload_models(self) -> dict[str, type[BaseModel]]:
@@ -53,26 +52,15 @@ class WSClient:
             raise ValueError(f"handler not registered for {event_name}")
         self._handlers.pop(event_name)
 
-    def on(self, event_name: str) -> Callable[[EventHandler], EventHandler]:
-        self._require_event_name(event_name)
-
-        def decorator(func: EventHandler) -> EventHandler:
-            self.add_handler(event_name, func)
-            return func
-
-        return decorator
-
-    async def connect(self, user: UserRef | str, *, reconnect: bool = False) -> None:
+    async def connect(self, *, reconnect: bool = False) -> None:
         self._assert_not_running()
         self._closing = False
-        self._ws_user = user
         self._task = asyncio.create_task(self._run_background(reconnect=reconnect))
         self._task.add_done_callback(self._consume_task_exception)
 
-    async def start(self, user: UserRef | str, *, reconnect: bool = False) -> None:
+    async def start(self, *, reconnect: bool = False) -> None:
         self._assert_not_running()
         self._closing = False
-        self._ws_user = user
         await self._run(reconnect=reconnect)
 
     async def disconnect(self) -> None:
@@ -153,11 +141,7 @@ class WSClient:
                 self._ws = None
 
     async def _fetch_ws_token(self) -> str:
-        user = self._ws_user
-        if user is None:
-            raise RuntimeError("websocket user is not set")
-
-        response = await self.client.http.post(f"/users/{user}/bot/ws-token")
+        response = await self.client.http.post(f"/users/{UserRef.ME}/bot/ws-token")
         payload = WsTokenPayload.model_validate(response.data)
         return payload.token
 
@@ -177,7 +161,7 @@ class WSClient:
         if handler is None:
             return
 
-        await handler(validated)
+        asyncio.create_task(handler(validated))
 
     def _require_event_name(self, event_name: str) -> None:
         if event_name not in EVENT_PAYLOAD_MODELS:

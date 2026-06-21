@@ -6,6 +6,10 @@ from pydantic import BaseModel
 from ..snowflake import Snowflake
 
 
+class PartialAttachment(BaseModel):
+    url: str
+
+
 class Attachment(BaseModel):
     id: int
     url: str
@@ -21,7 +25,3 @@ class Attachment(BaseModel):
     @property
     def created_at(self) -> datetime:
         return Snowflake(self.id).datetime
-
-
-class ExternalAttachment(BaseModel):
-    url: str

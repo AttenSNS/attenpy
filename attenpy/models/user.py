@@ -7,7 +7,7 @@ from ..ref import UserRef
 from ..snowflake import Snowflake
 
 if TYPE_CHECKING:
-    from .attachment import Attachment, ExternalAttachment
+    from .attachment import Attachment, PartialAttachment
     from .post import Post
 
 
@@ -15,7 +15,7 @@ class PartialUser(BaseModel):
     id: int
     scratch_name: str
     display_name: str | None
-    icon: "Attachment | ExternalAttachment"
+    icon: "Attachment | PartialAttachment"
     public_flags: int  # TODO
     deleted: bool
     is_muted: bool | None

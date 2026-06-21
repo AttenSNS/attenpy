@@ -1,19 +1,18 @@
 from __future__ import annotations
 
 import asyncio
-import inspect
 from collections.abc import Callable
 from contextlib import suppress
 from json import JSONDecodeError
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Awaitable
 from urllib.parse import urlencode, urlsplit, urlunsplit
 
 import aiohttp
 from pydantic import BaseModel
 
+from .models import Notice
 from .payloads import (
     BotReadyPayload,
-    NoticeCreatedPayload,
     WsTokenPayload,
 )
 from .ref import UserRef
@@ -21,11 +20,11 @@ from .ref import UserRef
 if TYPE_CHECKING:
     from .client import Client
 
-EventHandler = Callable[[Any], object]
+EventHandler = Callable[[Any], Awaitable[Any]]
 
 EVENT_PAYLOAD_MODELS: dict[str, type[BaseModel]] = {
     "bot.ready": BotReadyPayload,
-    "notice.created": NoticeCreatedPayload,
+    "notice.created": Notice,
 }
 
 
@@ -178,9 +177,7 @@ class WSClient:
         if handler is None:
             return
 
-        result = handler(validated)
-        if inspect.isawaitable(result):
-            await result
+        await handler(validated)
 
     def _require_event_name(self, event_name: str) -> None:
         if event_name not in EVENT_PAYLOAD_MODELS:

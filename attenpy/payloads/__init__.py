@@ -2,7 +2,6 @@ from .notice import NoticeUnreadCountPayload
 from .post import ParentsPostPayload
 from .ws import (
     BotReadyPayload,
-    NoticeCreatedPayload,
     WsTokenPayload,
 )
 
@@ -11,5 +10,4 @@ __all__ = [
     "NoticeUnreadCountPayload",
     "WsTokenPayload",
     "BotReadyPayload",
-    "NoticeCreatedPayload",
 ]

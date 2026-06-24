@@ -22,7 +22,7 @@ class UserRef:
 
     def __post_init__(self):
         if sum(i is not None for i in (self.username, self.user_id, self.me)) != 1:
-            raise ValueError
+            raise ValueError()
 
     @property
     def value(

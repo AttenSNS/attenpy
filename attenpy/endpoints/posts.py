@@ -50,7 +50,7 @@ class PostEndpoint:
         )
 
     async def delete(self, post: int | PartialPost):
-        await self.client.http.post(f"/posts/{int(post)}")
+        await self.client.http.delete(f"/posts/{int(post)}")
 
     async def love(self, post: int | PartialPost):
         await self.client.http.post(f"/posts/{int(post)}/love")

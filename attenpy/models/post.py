@@ -12,14 +12,14 @@ if TYPE_CHECKING:
 
 class PartialPost(BaseModel):
     id: int
-    author_id: str
+    author_id: int
     author: "PartialUser"
     content_md: str
     parent_id: int | None
     target_history_id: int | None
     current_history_id: int
-    quote_id: str | None
-    root_id: str | None
+    quote_id: int | None
+    root_id: int | None
     is_repost: bool
     is_edited: bool
     deleted: bool

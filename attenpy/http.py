@@ -33,7 +33,7 @@ class HTTPClient:
         self, method: str, path: str, **kw: Unpack[RequestOptions]
     ) -> Any:
         if not path.startswith("/"):
-            raise ValueError()
+            raise ValueError("The path must start with /.")
         session = await self._get_session()
         url = self.base_url + path
 

@@ -1,10 +1,11 @@
-from typing import Any, Optional, TypedDict, Unpack, cast
+import asyncio
+from typing import Any, Optional, TypedDict, Unpack
 
 import aiohttp
+from pydantic import ValidationError
 
-from .exceptions import HTTPException
-from .models import ListResponse, SuccessResponse
-from .types import AnyResponsePayload
+from .exceptions import HTTPException, InvalidResponseError
+from .models import ErrorResponse, ListResponse, SuccessResponse
 
 
 class RequestOptions(TypedDict, total=False):
@@ -29,46 +30,77 @@ class HTTPClient:
             self._session = aiohttp.ClientSession(headers=headers)
         return self._session
 
-    async def _request[T](
+    def _parse_response(
+        self, payload: Any
+    ) -> SuccessResponse[Any] | ListResponse[Any] | ErrorResponse:
+        if not isinstance(payload, dict) or "ok" not in payload:
+            raise InvalidResponseError(payload)
+
+        try:
+            if payload["ok"] is False:
+                return ErrorResponse.model_validate(payload)
+            if "page" in payload:
+                return ListResponse.model_validate(payload)
+            return SuccessResponse.model_validate(payload)
+        except ValidationError as exc:
+            raise InvalidResponseError(payload) from exc
+
+    async def _request(
         self, method: str, path: str, **kw: Unpack[RequestOptions]
-    ) -> Any:
+    ) -> SuccessResponse[Any] | ListResponse[Any]:
         if not path.startswith("/"):
             raise ValueError("The path must start with /.")
         session = await self._get_session()
         url = self.base_url + path
 
-        async with session.request(
-            method, url, json=kw.get("json"), params=kw.get("params")
-        ) as resp:
-            data = cast(AnyResponsePayload, await resp.json())  # TODO レスポンスの検証
-            if data["ok"] is False:
-                raise HTTPException(resp.status, data)  # TODO statusごとにクラス分ける
-                # TODO 429
+        while True:
+            async with session.request(
+                method, url, json=kw.get("json"), params=kw.get("params")
+            ) as resp:
+                data = self._parse_response(await resp.json())
+                if isinstance(data, ErrorResponse):
+                    if resp.status == 429 and data.code == "api_latelimit":
+                        retry_after = data.details.get("retry_after")
+                        if isinstance(retry_after, int | float) and retry_after >= 0:
+                            await asyncio.sleep(retry_after)
+                            continue
+                    raise HTTPException(
+                        resp.status, data
+                    )  # TODO statusごとにクラス分ける
+            return data
+
+    async def get(
+        self, path: str, **kw: Unpack[RequestOptions]
+    ) -> SuccessResponse[Any]:
+        return await self._request("GET", path, **kw)
+
+    async def get_list(
+        self, path: str, **kw: Unpack[RequestOptions]
+    ) -> ListResponse[Any]:
+        data = await self._request("GET", path, **kw)
+        if isinstance(data, SuccessResponse):
+            raise InvalidResponseError(data.model_dump(mode="python"))
         return data
 
-    async def get(self, path: str, **kw: Unpack[RequestOptions]) -> SuccessResponse:
-        data = await self._request("GET", path, **kw)
-        return SuccessResponse.from_json(data)
+    async def post(
+        self, path: str, **kw: Unpack[RequestOptions]
+    ) -> SuccessResponse[Any]:
+        return await self._request("POST", path, **kw)
 
-    async def get_list(self, path: str, **kw: Unpack[RequestOptions]) -> ListResponse:
-        data = await self._request("GET", path, **kw)
-        return ListResponse.from_json(data)
+    async def put(
+        self, path: str, **kw: Unpack[RequestOptions]
+    ) -> SuccessResponse[Any]:
+        return await self._request("PUT", path, **kw)
 
-    async def post(self, path: str, **kw: Unpack[RequestOptions]) -> SuccessResponse:
-        data = await self._request("POST", path, **kw)
-        return SuccessResponse.from_json(data)
+    async def patch(
+        self, path: str, **kw: Unpack[RequestOptions]
+    ) -> SuccessResponse[Any]:
+        return await self._request("PATCH", path, **kw)
 
-    async def put(self, path: str, **kw: Unpack[RequestOptions]) -> SuccessResponse:
-        data = await self._request("PUT", path, **kw)
-        return SuccessResponse.from_json(data)
-
-    async def patch(self, path: str, **kw: Unpack[RequestOptions]) -> SuccessResponse:
-        data = await self._request("PATCH", path, **kw)
-        return SuccessResponse.from_json(data)
-
-    async def delete(self, path: str, **kw: Unpack[RequestOptions]) -> SuccessResponse:
-        data = await self._request("DELETE", path, **kw)
-        return SuccessResponse.from_json(data)
+    async def delete(
+        self, path: str, **kw: Unpack[RequestOptions]
+    ) -> SuccessResponse[Any]:
+        return await self._request("DELETE", path, **kw)
 
     @property
     def closed(self):

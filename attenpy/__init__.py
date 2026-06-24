@@ -1,5 +1,5 @@
 from .client import Client
-from .exceptions import AttenpyException, HTTPException
+from .exceptions import AttenpyException, HTTPException, InvalidResponseError
 from .models import (
     Attachment,
     Notice,
@@ -27,6 +27,7 @@ __all__ = [
     "BotReadyPayload",
     "Client",
     "HTTPException",
+    "InvalidResponseError",
     "Notice",
     "NoticeKind",
     "NoticeTarget",

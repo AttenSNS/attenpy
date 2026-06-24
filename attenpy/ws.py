@@ -156,12 +156,15 @@ class WSClient:
         if model is None:
             return
 
-        validated = model.model_validate(data)
-        handler = self._handlers.get(event_name)
-        if handler is None:
-            return
+        try:
+            validated = model.model_validate(data)
+            handler = self._handlers.get(event_name)
+            if handler is None:
+                return
 
-        asyncio.create_task(handler(validated))
+            asyncio.create_task(handler(validated))
+        except Exception:
+            pass
 
     def _require_event_name(self, event_name: str) -> None:
         if event_name not in EVENT_PAYLOAD_MODELS:

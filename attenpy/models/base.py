@@ -1,49 +1,34 @@
-from dataclasses import dataclass
-from typing import Generic, Self, TypeVar
+from typing import Any, Generic, Literal, TypeVar
 
-from ..types import (
-    CursorPagePayload,
-    ListResponsePayload,
-    RequestMetaPayload,
-    SuccessResponsePayload,
-)
+from pydantic import BaseModel, field_validator
+
 from ..utils import int_or_none
 
 T = TypeVar("T")
 
 
-@dataclass(frozen=True, slots=True)
-class RequestMeta:
+def _normalize_optional_snowflake(value: Any) -> int | None:
+    return int_or_none(value)
+
+
+class RequestMeta(BaseModel):
     request_id: str
     session_id: int | None
     actor_id: int | None
 
+    @field_validator("session_id", "actor_id", mode="before")
     @classmethod
-    def from_json(cls, data: RequestMetaPayload) -> Self:
-        return cls(
-            data["request_id"],
-            int_or_none(data["session_id"]),
-            int_or_none(data["actor_id"]),
-        )
+    def validate_ids(cls, value: Any) -> int | None:
+        return _normalize_optional_snowflake(value)
 
 
-@dataclass(frozen=True, slots=True)
-class SuccessResponse(Generic[T]):
-    ok: bool
+class SuccessResponse(BaseModel, Generic[T]):
+    ok: Literal[True]
     meta: RequestMeta
     data: T
 
-    @classmethod
-    def from_json(cls, data: SuccessResponsePayload) -> Self:
-        return cls(
-            data["ok"],
-            RequestMeta.from_json(data["meta"]),
-            data["data"],
-        )
 
-
-@dataclass(frozen=True, slots=True)
-class CursorPage:
+class CursorPage(BaseModel):
     limit: int
     order: str
     cursor: int | None
@@ -51,30 +36,17 @@ class CursorPage:
     back: int | None
     has_more: bool
 
+    @field_validator("cursor", "next", "back", mode="before")
     @classmethod
-    def from_json(cls, data: CursorPagePayload) -> Self:
-        return cls(
-            data["limit"],
-            data["order"],
-            int_or_none(data["cursor"]),
-            int_or_none(data["next"]),
-            int_or_none(data["back"]),
-            data["has_more"],
-        )
+    def validate_cursors(cls, value: Any) -> int | None:
+        return _normalize_optional_snowflake(value)
 
 
-@dataclass(frozen=True, slots=True)
-class ListResponse(Generic[T]):
-    ok: bool
-    meta: RequestMeta
-    data: list[T]
+class ListResponse(SuccessResponse[list[T]], Generic[T]):
     page: CursorPage
 
-    @classmethod
-    def from_json(cls, data: ListResponsePayload) -> Self:
-        return cls(
-            data["ok"],
-            RequestMeta.from_json(data["meta"]),
-            data["data"],
-            CursorPage.from_json(data["page"]),
-        )
+
+class ErrorResponse(BaseModel):
+    ok: Literal[False]
+    code: str
+    details: dict[str, Any]

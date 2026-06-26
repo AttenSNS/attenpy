@@ -21,7 +21,7 @@ from .payloads import (
 from .ref import UserRef
 from .snowflake import Snowflake
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 __all__ = [
     "AttenpyException",
     "Attachment",

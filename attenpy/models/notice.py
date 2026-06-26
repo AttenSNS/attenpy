@@ -1,5 +1,6 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Literal, TypeAlias
+from enum import Enum
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
@@ -8,20 +9,25 @@ from ..snowflake import Snowflake
 if TYPE_CHECKING:
     from .user import PartialUser
 
-NoticeType: TypeAlias = Literal[
-    "welcome",
-    "login",
-    "warn",
-    "follow",
-    "mention",
-    "reply",
-    "quote",
-    "repost",
-    "love",
-    "invite_chat",
-]
 
-NoticeKind: TypeAlias = Literal["session", "post", "chat", "warn"]
+class NoticeType(str, Enum):
+    WELCOME = "welcome"
+    LOGIN = "login"
+    WARN = "warn"
+    FOLLOW = "follow"
+    MENTION = "mention"
+    REPLY = "reply"
+    QUOTE = "quote"
+    REPOST = "repost"
+    LOVE = "love"
+    INVITE_CHAT = "invite_chat"
+
+
+class NoticeKind(str, Enum):
+    SESSION = "session"
+    POST = "post"
+    CHAT = "chat"
+    WARN = "warn"
 
 
 class NoticeTarget(BaseModel):

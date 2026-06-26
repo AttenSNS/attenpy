@@ -1,9 +1,17 @@
 from datetime import datetime
-from typing import Literal
+from enum import Enum
 
 from pydantic import BaseModel
 
 from ..snowflake import Snowflake
+
+
+class AttachmentCategory(str, Enum):
+    ICON = "icon"
+    BANNER = "banner"
+    POST_ATTACHMENT = "post_attachment"
+    GROUP_ICON = "group_icon"
+    CHAT_ATTACHMENT = "chat_attachment"
 
 
 class PartialAttachment(BaseModel):
@@ -13,9 +21,7 @@ class PartialAttachment(BaseModel):
 class Attachment(BaseModel):
     id: int
     url: str
-    category: Literal[
-        "icon", "banner", "post_attachment", "group_icon", "chat_attachment"
-    ]
+    category: AttachmentCategory
     mime: str
     deleted: bool
 

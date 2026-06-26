@@ -22,7 +22,7 @@ class NoticeEndpoint:
     ) -> AsyncIterator[Notice]:
         params = None
         if types:
-            params = {"type": list(dict.fromkeys(types))}
+            params = {"type": [i.value for i in set(types)]}
         async for data in paginate(self.client.http, "/notices", params=params, **kw):
             yield Notice.model_validate(data)
 

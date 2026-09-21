@@ -23,7 +23,7 @@ class PartialPost(BaseModel):
     content_md: str
     parent_id: int | None
     target_history_id: int | None
-    current_history_id: int
+    current_history_id: int | None
     quote_id: int | None
     root_id: int | None
     is_repost: bool

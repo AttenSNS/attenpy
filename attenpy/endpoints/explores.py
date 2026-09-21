@@ -4,14 +4,13 @@ from typing import TYPE_CHECKING, Unpack
 
 from pydantic import TypeAdapter
 
-from attenpy import UserRef
-
 from ..models import Post, PostVisibility
 from ..pagination import (
     PaginateOptions,
     paginate,
 )
 from ..payloads import StatPayload, TrendPayload
+from ..ref import UserRef
 from ..utils import api_bool
 
 if TYPE_CHECKING:
@@ -40,7 +39,7 @@ class ExploreEndpoint:
 
     async def get_trend(self) -> AsyncGenerator[TrendPayload]:
         for data in TREND_DATA_TA.validate_python(
-            (await self.client.http.post("/explore/trend")).data
+            (await self.client.http.get("/explore/trend")).data
         ):
             yield data
 

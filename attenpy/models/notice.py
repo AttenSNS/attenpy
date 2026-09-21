@@ -55,3 +55,10 @@ class Notice(BaseModel):
     @property
     def created_at(self) -> datetime:
         return Snowflake(self.id).datetime
+
+
+class Warn(BaseModel):
+    id: int
+    user_id: int
+    kind: int
+    content: str

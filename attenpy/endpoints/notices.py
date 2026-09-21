@@ -1,7 +1,7 @@
 from collections.abc import AsyncGenerator, Sequence
 from typing import TYPE_CHECKING, Unpack
 
-from ..models import Notice
+from ..models import Notice, Warn
 from ..models.notice import NoticeType
 from ..pagination import PaginateOptions, paginate
 from ..payloads import NoticeUnreadCountPayload
@@ -15,10 +15,7 @@ class NoticeEndpoint:
         self.client = client
 
     async def list(
-        self,
-        *,
-        types: Sequence[NoticeType] | None = None,
-        **kw: Unpack[PaginateOptions],
+        self, *, types: Sequence[NoticeType] | None = None, **kw: Unpack[PaginateOptions]
     ) -> AsyncGenerator[Notice]:
         params = None
         if types:
@@ -33,3 +30,7 @@ class NoticeEndpoint:
         return NoticeUnreadCountPayload.model_validate(
             (await self.client.http.get("/notices/unread-count")).data
         )
+
+    async def list_warns(self, **kw: Unpack[PaginateOptions]) -> AsyncGenerator[Warn]:
+        async for data in paginate(self.client.http, "/warns", **kw):
+            yield Warn.model_validate(data)

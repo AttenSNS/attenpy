@@ -2,6 +2,8 @@ from collections.abc import AsyncGenerator
 from types import EllipsisType
 from typing import TYPE_CHECKING, Unpack
 
+from attenpy.payloads import BanStatusPayload
+
 from ..models import Attachment, PartialPost, PartialUser, Post, User
 from ..pagination import (
     PaginateOptions,
@@ -105,3 +107,8 @@ class UserEndpoint:
     ) -> AsyncGenerator[Post]:
         async for data in paginate(self.client.http, f"/users/{user}/reposts", **kw):
             yield Post.model_validate(data)
+
+    async def ban_status(self, user: UserRef | str) -> BanStatusPayload:
+        return BanStatusPayload.model_validate(
+            (await self.client.http.get(f"/users/{user}/ban")).data
+        )

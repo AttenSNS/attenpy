@@ -11,13 +11,15 @@ from ..pagination import (
     PaginateOptions,
     paginate,
 )
-from ..payloads import TrendPayload
+from ..payloads import StatPayload, TrendPayload
 from ..utils import api_bool
 
 if TYPE_CHECKING:
     from ..client import Client
 
 TREND_DATA_TA = TypeAdapter[list[TrendPayload]](list[TrendPayload])
+STAT_DATA_TA = TypeAdapter[list[StatPayload]](list[StatPayload])
+MIX_DATA_TA = TypeAdapter[list[Post]](list[Post])
 
 
 class ExploreEndpoint:
@@ -32,9 +34,9 @@ class ExploreEndpoint:
         async for data in paginate(self.client.http, "/explore/following", **kw):
             yield Post.model_validate(data)
 
-    async def get_mix_post(self, **kw: Unpack[PaginateOptions]) -> AsyncGenerator[Post]:
-        async for data in paginate(self.client.http, "/explore/mix", **kw):
-            yield Post.model_validate(data)
+    async def get_mix_post(self) -> AsyncGenerator[Post]:
+        for data in MIX_DATA_TA.validate_python((await self.client.http.get("/explore/mix")).data):
+            yield data
 
     async def get_trend(self) -> AsyncGenerator[TrendPayload]:
         for data in TREND_DATA_TA.validate_python(
@@ -66,3 +68,7 @@ class ExploreEndpoint:
             params["after"] = after.isoformat() if isinstance(after, datetime) else str(after)
         async for data in paginate(self.client.http, "/explore/search", params=params, **kw):
             yield Post.model_validate(data)
+
+    async def get_stats(self) -> AsyncGenerator[StatPayload]:
+        for data in STAT_DATA_TA.validate_python((await self.client.http.get("/stats")).data):
+            yield data

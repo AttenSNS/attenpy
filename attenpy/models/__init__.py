@@ -1,6 +1,6 @@
 from .attachment import Attachment, AttachmentCategory, PartialAttachment
 from .base import CursorPage, ErrorResponse, ListResponse, SuccessResponse
-from .notice import Notice, NoticeKind, NoticeTarget, NoticeType
+from .notice import Notice, NoticeKind, NoticeTarget, NoticeType, Warn
 from .post import PartialPost, Post, PostVisibility
 from .user import PartialUser, User
 
@@ -27,4 +27,5 @@ __all__ = [
     "SuccessResponse",
     "User",
     "PostVisibility",
+    "Warn",
 ]

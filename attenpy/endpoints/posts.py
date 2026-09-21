@@ -44,6 +44,11 @@ class PostEndpoint:
     async def get(self, post: int | PartialPost) -> Post:
         return Post.model_validate((await self.client.http.get(f"/posts/{int(post)}")).data)
 
+    async def edit(self, post: int | PartialPost, content: str) -> Post:
+        return Post.model_validate(
+            (await self.client.http.patch(f"/posts/{int(post)}", json={"content": content})).data
+        )
+
     async def reply(
         self,
         parent: int | PartialPost,

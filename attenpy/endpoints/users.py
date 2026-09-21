@@ -1,4 +1,4 @@
-from collections.abc import AsyncIterator
+from collections.abc import AsyncGenerator
 from types import EllipsisType
 from typing import TYPE_CHECKING, Unpack
 
@@ -60,48 +60,48 @@ class UserEndpoint:
 
     async def get_followers(
         self, user: UserRef | str, **kw: Unpack[PaginateOptions]
-    ) -> AsyncIterator[PartialUser]:
+    ) -> AsyncGenerator[PartialUser]:
         async for data in paginate(self.client.http, f"/users/{user}/followers", **kw):
             yield PartialUser.model_validate(data)
 
     async def get_following(
         self, user: UserRef | str, **kw: Unpack[PaginateOptions]
-    ) -> AsyncIterator[PartialUser]:
+    ) -> AsyncGenerator[PartialUser]:
         async for data in paginate(self.client.http, f"/users/{user}/following", **kw):
             yield PartialUser.model_validate(data)
 
     async def get_mutes(
         self, user: UserRef | str, **kw: Unpack[PaginateOptions]
-    ) -> AsyncIterator[PartialUser]:
+    ) -> AsyncGenerator[PartialUser]:
         async for data in paginate(self.client.http, f"/users/{user}/mutes", **kw):
             yield PartialUser.model_validate(data)
 
     async def get_posts(
         self, user: UserRef | str, **kw: Unpack[PaginateOptions]
-    ) -> AsyncIterator[Post]:
+    ) -> AsyncGenerator[Post]:
         async for data in paginate(self.client.http, f"/users/{user}/posts", **kw):
             yield Post.model_validate(data)
 
     async def get_medias(
         self, user: UserRef | str, **kw: Unpack[PaginateOptions]
-    ) -> AsyncIterator[Post]:
+    ) -> AsyncGenerator[Post]:
         async for data in paginate(self.client.http, f"/users/{user}/medias", **kw):
             yield Post.model_validate(data)
 
     async def get_loves(
         self, user: UserRef | str, **kw: Unpack[PaginateOptions]
-    ) -> AsyncIterator[Post]:
+    ) -> AsyncGenerator[Post]:
         async for data in paginate(self.client.http, f"/users/{user}/loves", **kw):
             yield Post.model_validate(data)
 
     async def get_bookmarks(
         self, user: UserRef | str, **kw: Unpack[PaginateOptions]
-    ) -> AsyncIterator[Post]:
+    ) -> AsyncGenerator[Post]:
         async for data in paginate(self.client.http, f"/users/{user}/bookmarks", **kw):
             yield Post.model_validate(data)
 
     async def get_reposts(
         self, user: UserRef | str, **kw: Unpack[PaginateOptions]
-    ) -> AsyncIterator[Post]:
+    ) -> AsyncGenerator[Post]:
         async for data in paginate(self.client.http, f"/users/{user}/reposts", **kw):
             yield Post.model_validate(data)

@@ -1,4 +1,4 @@
-from collections.abc import AsyncIterator, Sequence
+from collections.abc import AsyncGenerator, Sequence
 from typing import TYPE_CHECKING, Unpack
 
 from ..models import Notice
@@ -19,7 +19,7 @@ class NoticeEndpoint:
         *,
         types: Sequence[NoticeType] | None = None,
         **kw: Unpack[PaginateOptions],
-    ) -> AsyncIterator[Notice]:
+    ) -> AsyncGenerator[Notice]:
         params = None
         if types:
             params = {"type": [i.value for i in set(types)]}

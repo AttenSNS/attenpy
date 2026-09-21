@@ -1,4 +1,4 @@
-from collections.abc import AsyncIterator
+from collections.abc import AsyncGenerator
 from typing import Any, Literal, TypedDict, TypeVar, Unpack
 
 from .http import HTTPClient
@@ -24,7 +24,7 @@ async def paginate(
     *,
     params: dict[str, Any] | None = None,
     **kw: Unpack[PaginateOptions],
-) -> AsyncIterator[Any]:
+) -> AsyncGenerator[Any]:
     params = (params and params.copy()) or {}
     params["order"] = kw.get("order", PAGINATE_ORDER_DEFAULT)
     if "cursor" in kw:

@@ -1,5 +1,7 @@
-from collections.abc import AsyncIterator
+from collections.abc import AsyncGenerator
 from typing import TYPE_CHECKING, Unpack
+
+from pydantic import TypeAdapter
 
 from ..models import PartialPost, PartialUser, Post, PostVisibility
 from ..pagination import (
@@ -11,6 +13,8 @@ from ..utils import int_or_none
 
 if TYPE_CHECKING:
     from ..client import Client
+
+HISTORY_DATA_TA = TypeAdapter[list[Post]](list[Post])
 
 
 class PostEndpoint:
@@ -84,31 +88,31 @@ class PostEndpoint:
 
     async def get_loves(
         self, post: int | PartialPost, **kw: Unpack[PaginateOptions]
-    ) -> AsyncIterator[PartialUser]:
+    ) -> AsyncGenerator[PartialUser]:
         async for data in paginate(self.client.http, f"/posts/{int(post)}/loves", **kw):
             yield PartialUser.model_validate(data)
 
-    async def get_history(
-        self, post: int | PartialPost, **kw: Unpack[PaginateOptions]
-    ) -> AsyncIterator[Post]:
-        async for data in paginate(self.client.http, f"/posts/{int(post)}/history", **kw):
+    async def get_history(self, post: int | PartialPost) -> AsyncGenerator[Post]:
+        for data in HISTORY_DATA_TA.validate_python(
+            (await self.client.http.get(f"/posts/{int(post)}/history")).data
+        ):
             yield Post.model_validate(data)
 
     async def get_quotes(
         self, post: int | PartialPost, **kw: Unpack[PaginateOptions]
-    ) -> AsyncIterator[Post]:
+    ) -> AsyncGenerator[Post]:
         async for data in paginate(self.client.http, f"/posts/{int(post)}/quotes", **kw):
             yield Post.model_validate(data)
 
     async def get_replies(
         self, post: int | PartialPost, **kw: Unpack[PaginateOptions]
-    ) -> AsyncIterator[Post]:
+    ) -> AsyncGenerator[Post]:
         async for data in paginate(self.client.http, f"/posts/{int(post)}/replies", **kw):
             yield Post.model_validate(data)
 
     async def get_reposts(
         self, post: int | PartialPost, **kw: Unpack[PaginateOptions]
-    ) -> AsyncIterator[Post]:
+    ) -> AsyncGenerator[Post]:
         async for data in paginate(self.client.http, f"/posts/{int(post)}/reposts", **kw):
             yield Post.model_validate(data)
 

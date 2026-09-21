@@ -29,3 +29,43 @@ dev = [
 
 [tool.setuptools.packages.find]
 include = ["attenpy*"]
+
+[dependency-groups]
+dev = [
+    "basedpyright>=1.40.1",
+    "ruff>=0.16.8",
+]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E","F","W","I","UP","B","SIM"]
+preview = true
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+
+[tool.basedpyright]
+pythonVersion = "3.13"
+venvPath = "."
+venv = ".venv"
+
+include = ["attenpy"]
+exclude = [
+    "**/__pycache__",
+    ".venv",
+    "build",
+    "dist",
+]
+
+typeCheckingMode = "strict"
+
+reportUnusedCallResult = false
+reportMissingTypeStubs = false
+reportImplicitOverride = false
+reportPrivateUsage = false
+reportUnnecessaryCast = false

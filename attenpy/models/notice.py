@@ -1,5 +1,5 @@
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from .user import PartialUser
 
 
-class NoticeType(str, Enum):
+class NoticeType(StrEnum):
     WELCOME = "welcome"
     LOGIN = "login"
     WARN = "warn"
@@ -23,7 +23,7 @@ class NoticeType(str, Enum):
     INVITE_CHAT = "invite_chat"
 
 
-class NoticeKind(str, Enum):
+class NoticeKind(StrEnum):
     SESSION = "session"
     POST = "post"
     CHAT = "chat"

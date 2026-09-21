@@ -27,9 +27,7 @@ class NoticeEndpoint:
             yield Notice.model_validate(data)
 
     async def read_up_to(self, notice: int | Notice):
-        await self.client.http.put(
-            "/notices/read-up-to", json={"notice_id": int(notice)}
-        )
+        await self.client.http.put("/notices/read-up-to", json={"notice_id": int(notice)})
 
     async def get_unread_count(self) -> NoticeUnreadCountPayload:
         return NoticeUnreadCountPayload.model_validate(

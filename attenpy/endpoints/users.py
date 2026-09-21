@@ -1,5 +1,6 @@
+from collections.abc import AsyncIterator
 from types import EllipsisType
-from typing import TYPE_CHECKING, AsyncIterator, Unpack
+from typing import TYPE_CHECKING, Unpack
 
 from ..models import Attachment, PartialPost, PartialUser, Post, User
 from ..pagination import (

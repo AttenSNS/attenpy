@@ -1,12 +1,12 @@
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import BaseModel
 
 from ..snowflake import Snowflake
 
 
-class AttachmentCategory(str, Enum):
+class AttachmentCategory(StrEnum):
     ICON = "icon"
     BANNER = "banner"
     POST_ATTACHMENT = "post_attachment"

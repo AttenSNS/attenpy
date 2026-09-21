@@ -22,7 +22,7 @@ class Snowflake:
         self.value: Final[int] = value
 
     @classmethod
-    def parse(cls, value: int | str | "Snowflake") -> Self:
+    def parse(cls, value: int | str | Snowflake) -> Self:
         if isinstance(value, Snowflake):
             return cls(value.value)
 
@@ -49,9 +49,7 @@ class Snowflake:
 
         if is_max:
             return cls(
-                (offset_ms << TIMESTAMP_SHIFT)
-                | (MAX_WORKER_ID << WORKER_ID_SHIFT)
-                | MAX_SEQUENCE
+                (offset_ms << TIMESTAMP_SHIFT) | (MAX_WORKER_ID << WORKER_ID_SHIFT) | MAX_SEQUENCE
             )
         return cls(offset_ms << TIMESTAMP_SHIFT)
 

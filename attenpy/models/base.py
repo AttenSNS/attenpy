@@ -1,4 +1,4 @@
-from typing import Any, Generic, Literal, TypeVar
+from typing import Any, Literal, TypeVar
 
 from pydantic import BaseModel, field_validator
 
@@ -22,7 +22,7 @@ class RequestMeta(BaseModel):
         return _normalize_optional_snowflake(value)
 
 
-class SuccessResponse(BaseModel, Generic[T]):
+class SuccessResponse[T](BaseModel):
     ok: Literal[True]
     meta: RequestMeta
     data: T
@@ -42,7 +42,7 @@ class CursorPage(BaseModel):
         return _normalize_optional_snowflake(value)
 
 
-class ListResponse(SuccessResponse[list[T]], Generic[T]):
+class ListResponse[T](SuccessResponse[list[T]]):
     page: CursorPage
 
 

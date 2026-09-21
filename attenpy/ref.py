@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import ClassVar, Literal, Union
+from typing import ClassVar, Literal
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -27,11 +27,11 @@ class UserRef:
     @property
     def value(
         self,
-    ) -> Union[
-        tuple[Literal["username"], str],
-        tuple[Literal["user_id"], int],
-        tuple[Literal["me"], Literal[True]],
-    ]:
+    ) -> (
+        tuple[Literal["username"], str]
+        | tuple[Literal["user_id"], int]
+        | tuple[Literal["me"], Literal[True]]
+    ):
         if self.username is not None:
             return "username", self.username
         elif self.user_id is not None:

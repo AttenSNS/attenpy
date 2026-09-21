@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Callable
+from collections.abc import Callable, Coroutine
 from contextlib import suppress
 from json import JSONDecodeError
-from typing import TYPE_CHECKING, Any, Coroutine
+from typing import TYPE_CHECKING, Any
 from urllib.parse import urlencode, urlsplit, urlunsplit
 
 import aiohttp
@@ -29,7 +29,7 @@ EVENT_PAYLOAD_MODELS: dict[str, type[BaseModel]] = {
 
 
 class WSClient:
-    def __init__(self, client: "Client"):
+    def __init__(self, client: Client):
         self.client = client
         self._handlers: dict[str, EventHandler] = {}
         self._task: asyncio.Task[None] | None = None

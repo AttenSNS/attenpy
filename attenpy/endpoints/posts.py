@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, AsyncIterator, Unpack
+from collections.abc import AsyncIterator
+from typing import TYPE_CHECKING, Unpack
 
 from ..models import PartialPost, PartialUser, Post
 from ..pagination import (
@@ -30,9 +31,7 @@ class PostEndpoint:
         )
 
     async def get(self, post: int | PartialPost) -> Post:
-        return Post.model_validate(
-            (await self.client.http.get(f"/posts/{int(post)}")).data
-        )
+        return Post.model_validate((await self.client.http.get(f"/posts/{int(post)}")).data)
 
     async def reply(
         self,
@@ -65,9 +64,7 @@ class PostEndpoint:
         await self.client.http.delete(f"/posts/{int(post)}/bookmark")
 
     async def repost(self, post: int | PartialPost) -> Post:
-        return Post.model_validate(
-            (await self.client.http.post(f"/posts/{int(post)}/repost")).data
-        )
+        return Post.model_validate((await self.client.http.post(f"/posts/{int(post)}/repost")).data)
 
     async def unrepost(self, post: int | PartialPost):
         await self.client.http.delete(f"/posts/{int(post)}/repost")
@@ -81,33 +78,25 @@ class PostEndpoint:
     async def get_history(
         self, post: int | PartialPost, **kw: Unpack[PaginateOptions]
     ) -> AsyncIterator[Post]:
-        async for data in paginate(
-            self.client.http, f"/posts/{int(post)}/history", **kw
-        ):
+        async for data in paginate(self.client.http, f"/posts/{int(post)}/history", **kw):
             yield Post.model_validate(data)
 
     async def get_quotes(
         self, post: int | PartialPost, **kw: Unpack[PaginateOptions]
     ) -> AsyncIterator[Post]:
-        async for data in paginate(
-            self.client.http, f"/posts/{int(post)}/quotes", **kw
-        ):
+        async for data in paginate(self.client.http, f"/posts/{int(post)}/quotes", **kw):
             yield Post.model_validate(data)
 
     async def get_replies(
         self, post: int | PartialPost, **kw: Unpack[PaginateOptions]
     ) -> AsyncIterator[Post]:
-        async for data in paginate(
-            self.client.http, f"/posts/{int(post)}/replies", **kw
-        ):
+        async for data in paginate(self.client.http, f"/posts/{int(post)}/replies", **kw):
             yield Post.model_validate(data)
 
     async def get_reposts(
         self, post: int | PartialPost, **kw: Unpack[PaginateOptions]
     ) -> AsyncIterator[Post]:
-        async for data in paginate(
-            self.client.http, f"/posts/{int(post)}/reposts", **kw
-        ):
+        async for data in paginate(self.client.http, f"/posts/{int(post)}/reposts", **kw):
             yield Post.model_validate(data)
 
     async def get_parents(self, post: int | PartialPost) -> ParentsPostPayload:

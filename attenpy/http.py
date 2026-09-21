@@ -1,5 +1,5 @@
 import asyncio
-from typing import Any, Optional, TypedDict, Unpack
+from typing import Any, TypedDict, Unpack
 
 import aiohttp
 from pydantic import ValidationError
@@ -17,7 +17,7 @@ class HTTPClient:
     def __init__(self, base_url: str, token: str | None):
         self.base_url = base_url.rstrip("/")
         self.token = token
-        self._session: Optional[aiohttp.ClientSession] = None
+        self._session: aiohttp.ClientSession | None = None
         self._closed: bool = False
 
     async def _get_session(self) -> aiohttp.ClientSession:
@@ -64,42 +64,28 @@ class HTTPClient:
                         if isinstance(retry_after, int | float) and retry_after >= 0:
                             await asyncio.sleep(retry_after)
                             continue
-                    raise HTTPException(
-                        resp.status, data
-                    )  # TODO statusごとにクラス分ける
+                    raise HTTPException(resp.status, data)  # TODO statusごとにクラス分ける
             return data
 
-    async def get(
-        self, path: str, **kw: Unpack[RequestOptions]
-    ) -> SuccessResponse[Any]:
+    async def get(self, path: str, **kw: Unpack[RequestOptions]) -> SuccessResponse[Any]:
         return await self._request("GET", path, **kw)
 
-    async def get_list(
-        self, path: str, **kw: Unpack[RequestOptions]
-    ) -> ListResponse[Any]:
+    async def get_list(self, path: str, **kw: Unpack[RequestOptions]) -> ListResponse[Any]:
         data = await self._request("GET", path, **kw)
         if isinstance(data, SuccessResponse):
             raise InvalidResponseError(data.model_dump(mode="python"))
         return data
 
-    async def post(
-        self, path: str, **kw: Unpack[RequestOptions]
-    ) -> SuccessResponse[Any]:
+    async def post(self, path: str, **kw: Unpack[RequestOptions]) -> SuccessResponse[Any]:
         return await self._request("POST", path, **kw)
 
-    async def put(
-        self, path: str, **kw: Unpack[RequestOptions]
-    ) -> SuccessResponse[Any]:
+    async def put(self, path: str, **kw: Unpack[RequestOptions]) -> SuccessResponse[Any]:
         return await self._request("PUT", path, **kw)
 
-    async def patch(
-        self, path: str, **kw: Unpack[RequestOptions]
-    ) -> SuccessResponse[Any]:
+    async def patch(self, path: str, **kw: Unpack[RequestOptions]) -> SuccessResponse[Any]:
         return await self._request("PATCH", path, **kw)
 
-    async def delete(
-        self, path: str, **kw: Unpack[RequestOptions]
-    ) -> SuccessResponse[Any]:
+    async def delete(self, path: str, **kw: Unpack[RequestOptions]) -> SuccessResponse[Any]:
         return await self._request("DELETE", path, **kw)
 
     @property

@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import StrEnum, auto
 from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
@@ -8,6 +9,11 @@ from ..snowflake import Snowflake
 if TYPE_CHECKING:
     from .attachment import Attachment
     from .user import PartialUser
+
+
+class PostVisibility(StrEnum):
+    PUBLIC = auto()
+    LOCKED = auto()
 
 
 class PartialPost(BaseModel):
@@ -22,6 +28,8 @@ class PartialPost(BaseModel):
     root_id: int | None
     is_repost: bool
     is_edited: bool
+    visibility: PostVisibility
+    is_hidden: bool
     deleted: bool
     attachments: list["Attachment"]
 

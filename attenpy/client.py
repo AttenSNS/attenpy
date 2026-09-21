@@ -1,4 +1,5 @@
 import asyncio
+from collections.abc import Callable
 from types import TracebackType
 
 from .endpoints import NoticeEndpoint, PostEndpoint, UserEndpoint
@@ -41,7 +42,7 @@ class Client:
     def remove_handler(self, event_name: str):
         self.ws.remove_handler(event_name)
 
-    def on(self, event_name: str):
+    def on[T: EventHandler](self, event_name: str) -> Callable[[T], T]:
         return _EventHandlerRegister(self.ws, event_name)
 
     async def connect_ws(self, *, reconnect: bool = False) -> None:

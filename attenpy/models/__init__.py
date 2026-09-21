@@ -1,7 +1,7 @@
 from .attachment import Attachment, AttachmentCategory, PartialAttachment
 from .base import CursorPage, ErrorResponse, ListResponse, SuccessResponse
 from .notice import Notice, NoticeKind, NoticeTarget, NoticeType
-from .post import PartialPost, Post
+from .post import PartialPost, Post, PostVisibility
 from .user import PartialUser, User
 
 Notice.model_rebuild()
@@ -26,4 +26,5 @@ __all__ = [
     "Post",
     "SuccessResponse",
     "User",
+    "PostVisibility",
 ]

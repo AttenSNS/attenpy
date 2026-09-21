@@ -1,5 +1,5 @@
 from datetime import datetime
-from enum import StrEnum
+from enum import StrEnum, auto
 
 from pydantic import BaseModel
 
@@ -7,11 +7,11 @@ from ..snowflake import Snowflake
 
 
 class AttachmentCategory(StrEnum):
-    ICON = "icon"
-    BANNER = "banner"
-    POST_ATTACHMENT = "post_attachment"
-    GROUP_ICON = "group_icon"
-    CHAT_ATTACHMENT = "chat_attachment"
+    ICON = auto()
+    BANNER = auto()
+    POST_ATTACHMENT = auto()
+    GROUP_ICON = auto()
+    CHAT_ATTACHMENT = auto()
 
 
 class PartialAttachment(BaseModel):

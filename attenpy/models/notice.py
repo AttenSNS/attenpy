@@ -1,5 +1,5 @@
 from datetime import datetime
-from enum import StrEnum
+from enum import StrEnum, auto
 from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
@@ -11,23 +11,24 @@ if TYPE_CHECKING:
 
 
 class NoticeType(StrEnum):
-    WELCOME = "welcome"
-    LOGIN = "login"
-    WARN = "warn"
-    FOLLOW = "follow"
-    MENTION = "mention"
-    REPLY = "reply"
-    QUOTE = "quote"
-    REPOST = "repost"
-    LOVE = "love"
-    INVITE_CHAT = "invite_chat"
+    WELCOME = auto()
+    LOGIN = auto()
+    WARN = auto()
+    FOLLOW = auto()
+    MENTION = auto()
+    REPLY = auto()
+    QUOTE = auto()
+    REPOST = auto()
+    LOVE = auto()
+    INVITE_CHAT = auto()
+    ACCESS_REQUEST = auto()
 
 
 class NoticeKind(StrEnum):
-    SESSION = "session"
-    POST = "post"
-    CHAT = "chat"
-    WARN = "warn"
+    SESSION = auto()
+    POST = auto()
+    CHAT = auto()
+    WARN = auto()
 
 
 class NoticeTarget(BaseModel):

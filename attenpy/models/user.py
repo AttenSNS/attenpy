@@ -21,6 +21,7 @@ class PartialUser(BaseModel):
     is_muted: bool | None
     is_following: bool | None = None
     is_followed: bool | None = None
+    has_post_access: bool | None = None
 
     def __int__(self) -> int:
         return self.id
@@ -35,8 +36,9 @@ class PartialUser(BaseModel):
 
 
 class User(PartialUser):
-    scratch_id: int
+    scratch_id: int | None
     bio: str
+    banner: "Attachment | None"
     pinned: "Post | None"
     followers_count: int
     following_count: int

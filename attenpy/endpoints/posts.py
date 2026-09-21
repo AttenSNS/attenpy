@@ -1,7 +1,7 @@
 from collections.abc import AsyncIterator
 from typing import TYPE_CHECKING, Unpack
 
-from ..models import PartialPost, PartialUser, Post
+from ..models import PartialPost, PartialUser, Post, PostVisibility
 from ..pagination import (
     PaginateOptions,
     paginate,
@@ -21,11 +21,18 @@ class PostEndpoint:
         self,
         content: str,
         quote: int | PartialPost | None = None,
+        *,
+        visibility: PostVisibility,
     ) -> Post:
         return Post.model_validate(
             (
                 await self.client.http.post(
-                    "/posts", json={"content": content, "quote": int_or_none(quote)}
+                    "/posts",
+                    json={
+                        "content": content,
+                        "quote_id": int_or_none(quote),
+                        "visibility": visibility,
+                    },
                 )
             ).data
         )
@@ -38,12 +45,18 @@ class PostEndpoint:
         parent: int | PartialPost,
         content: str,
         quote: int | PartialPost | None = None,
+        *,
+        visibility: PostVisibility,
     ) -> Post:
         return Post.model_validate(
             (
                 await self.client.http.post(
                     f"/posts/{int(parent)}/reply",
-                    json={"content": content, "quote": int_or_none(quote)},
+                    json={
+                        "content": content,
+                        "quote_id": int_or_none(quote),
+                        "visibility": visibility,
+                    },
                 )
             ).data
         )

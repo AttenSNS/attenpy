@@ -14,7 +14,6 @@ from .models import (
     User,
 )
 from .payloads import (
-    BotReadyPayload,
     NoticeUnreadCountPayload,
     ParentsPostPayload,
 )
@@ -26,7 +25,6 @@ __all__ = [
     "AttenpyException",
     "Attachment",
     "AttachmentCategory",
-    "BotReadyPayload",
     "Client",
     "HTTPException",
     "InvalidResponseError",

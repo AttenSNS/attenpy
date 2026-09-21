@@ -11,10 +11,7 @@ import aiohttp
 from pydantic import BaseModel
 
 from .models import Notice
-from .payloads import (
-    BotReadyPayload,
-    WsTokenPayload,
-)
+from .payloads import WsTokenPayload
 from .ref import UserRef
 
 if TYPE_CHECKING:
@@ -23,7 +20,6 @@ if TYPE_CHECKING:
 EventHandler = Callable[[Any], Coroutine[Any, Any, Any]]
 
 EVENT_PAYLOAD_MODELS: dict[str, type[BaseModel]] = {
-    "bot.ready": BotReadyPayload,
     "notice.created": Notice,
 }
 

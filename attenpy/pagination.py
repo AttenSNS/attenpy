@@ -24,7 +24,7 @@ async def paginate(
     *,
     params: dict[str, Any] | None = None,
     **kw: Unpack[PaginateOptions],
-) -> AsyncIterator:
+) -> AsyncIterator[Any]:
     params = (params and params.copy()) or {}
     params["order"] = kw.get("order", PAGINATE_ORDER_DEFAULT)
     if "cursor" in kw:

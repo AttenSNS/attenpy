@@ -1,5 +1,6 @@
 import asyncio
-from typing import Any, TypedDict, Unpack
+from types import TracebackType
+from typing import Any, TypedDict, Unpack, cast
 
 import aiohttp
 from pydantic import ValidationError
@@ -24,7 +25,7 @@ class HTTPClient:
         if self.closed:
             raise RuntimeError("Session is closed")
         if self._session is None or self._session.closed:
-            headers = {}
+            headers = dict[str, str]()
             if self.token:
                 headers["Authorization"] = "Bearer " + self.token
             self._session = aiohttp.ClientSession(headers=headers)
@@ -40,8 +41,8 @@ class HTTPClient:
             if payload["ok"] is False:
                 return ErrorResponse.model_validate(payload)
             if "page" in payload:
-                return ListResponse.model_validate(payload)
-            return SuccessResponse.model_validate(payload)
+                return ListResponse[Any].model_validate(payload)
+            return SuccessResponse[Any].model_validate(payload)
         except ValidationError as exc:
             raise InvalidResponseError(payload) from exc
 
@@ -72,9 +73,9 @@ class HTTPClient:
 
     async def get_list(self, path: str, **kw: Unpack[RequestOptions]) -> ListResponse[Any]:
         data = await self._request("GET", path, **kw)
-        if isinstance(data, SuccessResponse):
-            raise InvalidResponseError(data.model_dump(mode="python"))
-        return data
+        if isinstance(data, ListResponse):
+            return cast(ListResponse[Any], data)
+        raise InvalidResponseError(data.model_dump(mode="python"))
 
     async def post(self, path: str, **kw: Unpack[RequestOptions]) -> SuccessResponse[Any]:
         return await self._request("POST", path, **kw)
@@ -100,5 +101,10 @@ class HTTPClient:
     async def __aenter__(self):
         return self
 
-    async def __aexit__(self, exc_type, exc, tb):
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
         await self.close()

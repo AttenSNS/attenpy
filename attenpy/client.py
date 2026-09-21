@@ -1,4 +1,5 @@
 import asyncio
+from types import TracebackType
 
 from .endpoints import NoticeEndpoint, PostEndpoint, UserEndpoint
 from .http import HTTPClient
@@ -34,7 +35,7 @@ class Client:
 
     # websocket
 
-    def add_handler(self, event_name: str, func):
+    def add_handler(self, event_name: str, func: EventHandler):
         self.ws.add_handler(event_name, func)
 
     def remove_handler(self, event_name: str):
@@ -74,5 +75,10 @@ class Client:
     async def __aenter__(self):
         return self
 
-    async def __aexit__(self, exc_type, exc, tb):
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
         await self.close()

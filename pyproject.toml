@@ -69,3 +69,4 @@ reportMissingTypeStubs = false
 reportImplicitOverride = false
 reportPrivateUsage = false
 reportUnnecessaryCast = false
+reportUnnecessaryIsInstance = false

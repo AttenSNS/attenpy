@@ -25,13 +25,11 @@ class Snowflake:
     def parse(cls, value: int | str | Snowflake) -> Self:
         if isinstance(value, Snowflake):
             return cls(value.value)
-
-        if isinstance(value, int):
+        elif isinstance(value, int):
             if 0 <= value <= MAX_SNOWFLAKE:
                 return cls(value)
             raise ValueError(f"snowflake must be between 0 and {MAX_SNOWFLAKE}")
-
-        if isinstance(value, str):
+        elif isinstance(value, str):
             text = value.strip()
             if not text.isdecimal():
                 raise ValueError("snowflake must be a decimal string")
@@ -39,8 +37,8 @@ class Snowflake:
             if 0 <= parsed <= MAX_SNOWFLAKE:
                 return cls(parsed)
             raise ValueError(f"snowflake must be between 0 and {MAX_SNOWFLAKE}")
-
-        raise TypeError("snowflake must be an integer or decimal string")
+        else:
+            raise TypeError("snowflake must be an integer or decimal string")
 
     @classmethod
     def from_datetime(cls, dt: datetime, *, is_max: bool = False) -> Self:

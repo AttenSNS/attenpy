@@ -4,7 +4,7 @@ import asyncio
 from collections.abc import Callable, Coroutine
 from contextlib import suppress
 from json import JSONDecodeError
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 from urllib.parse import urlencode, urlsplit, urlunsplit
 
 import aiohttp
@@ -124,7 +124,7 @@ class WSClient:
                         continue
 
                     try:
-                        payload = message.json()
+                        payload = cast(dict[str, str], message.json())
                     except (TypeError, JSONDecodeError):
                         continue
 

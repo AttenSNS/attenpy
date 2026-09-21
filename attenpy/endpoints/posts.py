@@ -96,7 +96,7 @@ class PostEndpoint:
         for data in HISTORY_DATA_TA.validate_python(
             (await self.client.http.get(f"/posts/{int(post)}/history")).data
         ):
-            yield Post.model_validate(data)
+            yield data
 
     async def get_quotes(
         self, post: int | PartialPost, **kw: Unpack[PaginateOptions]

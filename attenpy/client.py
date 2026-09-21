@@ -2,7 +2,7 @@ import asyncio
 from collections.abc import Callable
 from types import TracebackType
 
-from .endpoints import NoticeEndpoint, PostEndpoint, UserEndpoint
+from .endpoints import ExploreEndpoint, NoticeEndpoint, PostEndpoint, UserEndpoint
 from .http import HTTPClient
 from .ws import EventHandler, WSClient
 
@@ -31,6 +31,7 @@ class Client:
         self.users = UserEndpoint(self)
         self.posts = PostEndpoint(self)
         self.notices = NoticeEndpoint(self)
+        self.explores = ExploreEndpoint(self)
 
         self._closed_event = asyncio.Event()
 

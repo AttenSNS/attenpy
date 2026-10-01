@@ -5,14 +5,12 @@ from collections.abc import Callable, Coroutine
 from contextlib import suppress
 from json import JSONDecodeError
 from typing import TYPE_CHECKING, Any, cast
-from urllib.parse import urlencode, urlsplit, urlunsplit
+from urllib.parse import urlsplit, urlunsplit
 
 import aiohttp
 from pydantic import BaseModel
 
 from .models import Notice
-from .payloads import WsTokenPayload
-from .ref import UserRef
 
 if TYPE_CHECKING:
     from .client import Client
@@ -102,10 +100,7 @@ class WSClient:
                 await asyncio.sleep(1)
 
     async def _run_once(self) -> None:
-        token = await self._fetch_ws_token()
-        session = await self.client.http._get_session()
-
-        async with session.ws_connect(self._build_ws_url(token)) as ws:
+        async with await self.client.http.ws_connect(self._build_ws_url()) as ws:
             self._ws = ws
             try:
                 async for message in ws:
@@ -136,16 +131,10 @@ class WSClient:
             finally:
                 self._ws = None
 
-    async def _fetch_ws_token(self) -> str:
-        response = await self.client.http.post(f"/users/{UserRef.ME}/bot/ws-token")
-        payload = WsTokenPayload.model_validate(response.data)
-        return payload.token
-
-    def _build_ws_url(self, token: str) -> str:
+    def _build_ws_url(self) -> str:
         parsed = urlsplit(self.client.base_url)
         scheme = "wss" if parsed.scheme == "https" else "ws"
-        query = urlencode({"token": token})
-        return urlunsplit((scheme, parsed.netloc, "/ws", query, ""))
+        return urlunsplit((scheme, parsed.netloc, "/ws", "", ""))
 
     async def _dispatch(self, event_name: str, data: dict[str, Any]) -> None:
         model = EVENT_PAYLOAD_MODELS.get(event_name)

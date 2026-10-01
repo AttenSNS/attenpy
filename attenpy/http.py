@@ -71,6 +71,10 @@ class HTTPClient:
     async def get(self, path: str, **kw: Unpack[RequestOptions]) -> SuccessResponse[Any]:
         return await self._request("GET", path, **kw)
 
+    async def ws_connect(self, url: str) -> aiohttp.ClientWebSocketResponse:
+        session = await self._get_session()
+        return await session.ws_connect(url)
+
     async def get_list(self, path: str, **kw: Unpack[RequestOptions]) -> ListResponse[Any]:
         data = await self._request("GET", path, **kw)
         if isinstance(data, ListResponse):

@@ -38,7 +38,7 @@ class PartialPost(BaseModel):
 
     @property
     def created_at(self) -> datetime:
-        return Snowflake(self.id).datetime
+        return Snowflake(self.id).created_at
 
 
 class Post(PartialPost):

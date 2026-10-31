@@ -1,6 +1,6 @@
 import asyncio
 from types import TracebackType
-from typing import Any, TypedDict, Unpack, cast
+from typing import Any, TypedDict, Unpack
 
 import aiohttp
 from pydantic import ValidationError
@@ -78,7 +78,7 @@ class HTTPClient:
     async def get_list(self, path: str, **kw: Unpack[RequestOptions]) -> ListResponse[Any]:
         data = await self._request("GET", path, **kw)
         if isinstance(data, ListResponse):
-            return cast(ListResponse[Any], data)
+            return data
         raise InvalidResponseError(data.model_dump(mode="python"))
 
     async def post(self, path: str, **kw: Unpack[RequestOptions]) -> SuccessResponse[Any]:

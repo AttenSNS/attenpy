@@ -62,12 +62,8 @@ class Snowflake:
         return (self.value >> TIMESTAMP_SHIFT) + EPOCH_MS
 
     @property
-    def datetime(self) -> datetime:
-        return datetime.fromtimestamp(self.timestamp_ms / 1000, tz=UTC)
-
-    @property
     def created_at(self) -> datetime:
-        return self.datetime
+        return datetime.fromtimestamp(self.timestamp_ms / 1000, tz=UTC)
 
     @property
     def worker_id(self) -> int:

@@ -1,16 +1,14 @@
 from collections.abc import AsyncGenerator
-from types import EllipsisType
 from typing import TYPE_CHECKING, Unpack
 
 from attenpy.payloads import BanStatusPayload
 
-from ..models import Attachment, PartialPost, PartialUser, Post, User
+from ..models import ChatChannel, PartialUser, Post, User
 from ..pagination import (
     PaginateOptions,
     paginate,
 )
 from ..ref import UserRef
-from ..utils import int_or_none
 
 if TYPE_CHECKING:
     from ..client import Client
@@ -22,31 +20,6 @@ class UserEndpoint:
 
     async def get(self, user: UserRef | str) -> User:
         return User.model_validate((await self.client.http.get(f"/users/{user}")).data)
-
-    async def edit(
-        self,
-        user: UserRef | str,
-        *,
-        display_name: str | None | EllipsisType = ...,
-        bio: str | EllipsisType = ...,
-        icon: int | Attachment | None | EllipsisType = ...,
-        banner: int | Attachment | None | EllipsisType = ...,
-        pinned: int | PartialPost | None | EllipsisType = ...,
-    ) -> User:
-        payload = {}
-        if display_name is not ...:
-            payload["display_name"] = display_name
-        if bio is not ...:
-            payload["bio"] = bio
-        if icon is not ...:
-            payload["icon_id"] = int_or_none(icon)
-        if banner is not ...:
-            payload["banner_id"] = int_or_none(banner)
-        if pinned is not ...:
-            payload["pinned_id"] = int_or_none(pinned)
-        return User.model_validate(
-            (await self.client.http.patch(f"/users/{user}", json=payload)).data
-        )
 
     async def follow(self, user: UserRef | str):
         await self.client.http.post(f"/users/{user}/follow")
@@ -72,12 +45,6 @@ class UserEndpoint:
         async for data in paginate(self.client.http, f"/users/{user}/following", **kw):
             yield PartialUser.model_validate(data)
 
-    async def get_mutes(
-        self, user: UserRef | str, **kw: Unpack[PaginateOptions]
-    ) -> AsyncGenerator[PartialUser]:
-        async for data in paginate(self.client.http, f"/users/{user}/mutes", **kw):
-            yield PartialUser.model_validate(data)
-
     async def get_posts(
         self, user: UserRef | str, **kw: Unpack[PaginateOptions]
     ) -> AsyncGenerator[Post]:
@@ -96,12 +63,6 @@ class UserEndpoint:
         async for data in paginate(self.client.http, f"/users/{user}/loves", **kw):
             yield Post.model_validate(data)
 
-    async def get_bookmarks(
-        self, user: UserRef | str, **kw: Unpack[PaginateOptions]
-    ) -> AsyncGenerator[Post]:
-        async for data in paginate(self.client.http, f"/users/{user}/bookmarks", **kw):
-            yield Post.model_validate(data)
-
     async def get_reposts(
         self, user: UserRef | str, **kw: Unpack[PaginateOptions]
     ) -> AsyncGenerator[Post]:
@@ -112,3 +73,12 @@ class UserEndpoint:
         return BanStatusPayload.model_validate(
             (await self.client.http.get(f"/users/{user}/ban")).data
         )
+
+    async def request_access(self, user: UserRef | str):
+        await self.client.http.post(f"/users/{user}/access")
+
+    async def remove_access(self, user: UserRef | str):
+        await self.client.http.delete(f"/users/{user}/access")
+
+    async def get_chat(self, user: UserRef | str) -> ChatChannel:
+        return ChatChannel.model_validate((await self.client.http.get(f"/users/{user}/chat")).data)

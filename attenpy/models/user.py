@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import StrEnum, auto
 from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
@@ -9,6 +10,12 @@ from ..snowflake import Snowflake
 if TYPE_CHECKING:
     from .attachment import Attachment, PartialAttachment
     from .post import Post
+
+
+class UserAccessStatus(StrEnum):
+    PENDING = auto()
+    ACCEPTED = auto()
+    DECLINED = auto()
 
 
 class PartialUser(BaseModel):
